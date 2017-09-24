@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="refresh" content="2">
+
+        <title>Class Status</title>
+        <style>
+            BODY {
+                background-color: #333;
+                color: #FFF;
+            }
+
+            .students.submitted {
+                color: hsl(27,55%,62%);
+            }
+            .students.correct {
+                color: hsl(120, 55%, 62%);
+            }
+
+            .total.submitted {
+                color: hsl(27,15%,62%);
+            }
+            .total.correct {
+                color: hsl(120, 15%, 62%);
+;
+            }
+
+            .value {
+                font-size: 200px;
+                font-weight: bold;
+                font-family: 'Impact';
+            }
+            .label {
+                font-size: 40px;
+                font-family: 'Verdana';
+            }
+
+            .value.students.submitted {
+                position: absolute;
+                top: 120px;
+                right: calc(50% + 30px);
+            }
+            .value.students.correct {
+                position: absolute;
+                top: 120px;
+                left: calc(50% + 30px);
+            }
+
+            .label.students.submitted {
+                position: absolute;
+                top: 80px;
+                right: calc(50% + 30px);
+            }
+            .label.students.correct {
+                position: absolute;
+                top: 80px;
+                left: calc(50% + 30px);
+            }
+
+            .value.total.submitted {
+                position: absolute;
+                top: 400px;
+                right: calc(50% + 30px);
+            }
+            .value.total.correct {
+                position: absolute;
+                top: 400px;
+                left: calc(50% + 30px);
+            }
+
+            .label.total.submitted {
+                position: absolute;
+                top: 360px;
+                right: calc(50% + 30px);
+            }
+            .label.total.correct {
+                position: absolute;
+                top: 360px;
+                left: calc(50% + 30px);
+            }
+        </style>
+    </head>
+    <body>
+        <div class="large">
+            <div class="label students submitted">Students Submitted</div>
+            <div class="value students submitted">{{ .students_submitted }}</div>
+            <div class="label students correct">Students Correct</div>
+            <div class="value students correct">{{ .students_correct }}</div>
+
+            <div class="value total submitted">{{ .total_submitted }}</div>
+            <div class="label total submitted">Total Submits</div>
+            <div class="value total correct">{{ .total_correct }}</div>
+            <div class="label total correct">Correct Submits</div>
+        </div>
+    </body>
+</html>
