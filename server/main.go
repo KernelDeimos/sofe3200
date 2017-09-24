@@ -31,17 +31,23 @@ func (sets InputSets) Get(name string) (set InputSet, exists bool) {
 	return
 }
 
-type Student struct {
+type StudentOutputs struct {
 	Submitted int
 	Correct   int
-	Team      string
+}
+
+type Student struct {
+	Outputs map[string]StudentOutputs
+	Team    string
 }
 type StudentMap map[string]Student
 
 func (smap StudentMap) GetStudent(name string) Student {
 	_, exists := smap[name]
 	if !exists {
-		smap[name] = Student{}
+		student := Student{}
+		student.Outputs = map[string]StudentOutputs{}
+		smap[name] = student
 	}
 	return smap[name]
 }
@@ -103,7 +109,13 @@ func main() {
 		uuid := c.Param("uuid")
 		logrus.Info(uuid)
 		student := students.GetStudent(uuid)
-		student.Submitted++
+		if _, exists := student.Outputs[name]; !exists {
+			student.Outputs[name] = StudentOutputs{}
+		}
+		outputs := student.Outputs[name]
+		outputs.Submitted++
+
+		student.Outputs[name] = outputs
 		students[uuid] = student
 
 		output := c.PostForm("data")
@@ -117,34 +129,43 @@ func main() {
 		soluString := strings.Trim(set.Solution, " \n")
 
 		if userString == soluString {
-			student.Correct++
+			outputs.Correct++
+
+			student.Outputs[name] = outputs
 			students[uuid] = student
 			c.String(http.StatusOK, "Success!\n")
 		} else {
 			c.String(http.StatusOK, "Nope! Try again :P\n")
 		}
 	})
-	r.GET("/display", func(c *gin.Context) {
+	r.GET("/display/:name", func(c *gin.Context) {
 		var studentsSubmitted int
 		var studentsCorrect int
 		var totalSubmitted int
 		var totalCorrect int
 		teamScores := map[string]int{}
 
+		name := c.Param("name")
+
 		for _, team := range teams {
 			teamScores[team] = 0
 		}
 
 		for _, student := range students {
-			if student.Submitted > 0 {
+			outputs, exists := student.Outputs[name]
+			if !exists {
+				outputs = StudentOutputs{}
+			}
+
+			if outputs.Submitted > 0 {
 				studentsSubmitted++
 			}
-			if student.Correct > 0 {
+			if outputs.Correct > 0 {
 				studentsCorrect++
 				teamScores[student.Team]++
 			}
-			totalSubmitted += student.Submitted
-			totalCorrect += student.Correct
+			totalSubmitted += outputs.Submitted
+			totalCorrect += outputs.Correct
 		}
 		c.HTML(http.StatusOK, "index.tmpl", gin.H{
 			"students_submitted": studentsSubmitted,
